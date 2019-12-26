@@ -81,6 +81,8 @@ MsgBox "Outlook import completed.", 64, "Import EML"
 
 Sub ImportEML(oOutlookFolder, oParentFolder)
 
+Wscript.Echo oParentFolder
+
 Dim oFile
 
 'Read each file of the folder
