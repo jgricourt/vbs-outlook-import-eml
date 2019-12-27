@@ -13,11 +13,18 @@
 '
 ' Author : Jean-Gaël Gricourt 
 ' Inspired by : Robert Sparnaaij - http://www.howto-outlook.com/howto/import-eml-files.htm
-' Version: 1.0
+' Version: 1.01
 ' Website: none
 ' Github : https://github.com/jgricourt/vbs-outlook-import-eml.git
 '
 ' Usage : cscript import-eml.vbs
+'
+' Potential issues (already adressed in version 1.01): 
+' 
+' Multiple email windows opened during execution / error after execution : "Erreur d'exécution Microsoft VBScript Desc: Le serveur distant n'existe pas ou n'est pas disponible"
+' Cause : the main Outlook window is not fully openned after calling oOutlook.Session.PickFolder
+' Solution(s) : - open Outlook prior executing the script
+'               - increase WScript.Sleep time.
 '===================================================================
 
 Option Explicit
@@ -46,8 +53,22 @@ Dim oInitialFolder : Set oInitialFolder = oShell.BrowseForFolder(0, "Select the 
 If Not (oInitialFolder Is Nothing) Then
 
   'Select Outlook destination folder  
-  Dim oOutlook : Set oOutlook = CreateObject("Outlook.Application")  
+  Dim oOutlook : Set oOutlook = CreateObject("Outlook.Application")    
   Dim oOutlookFolder : Set oOutlookFolder = oOutlook.Session.PickFolder
+  
+  'Check if Outlook is running
+  On Error Resume Next
+  Dim oOutlook2 : Set oOutlook2 = GetObject(, "Outlook.Application")
+  If Err.Number = 0 Then
+    Wscript.Echo "Outlook is running fine ..."
+  Else    
+    Wscript.Echo "Outlook is not running then force open ..."
+    oOutlook.Session.GetDefaultFolder(6).Display 'Force the full Outlook window to open
+    Err.Clear
+
+    'Wscript.Echo "Outlook is not running ... import aborted !"    
+    'Wscript.Quit
+  End If
 
   'Select FileSystem source folder
   Dim oFileSystemObject : Set oFileSystemObject = CreateObject("Scripting.FileSystemObject")
@@ -98,7 +119,7 @@ For Each oFile In oParentFolder.Files
 
     'Warning : eml files must be associated to Outlook for opening
 	  oShell.ShellExecute oFile.Path, "", "", "open", 1
-	  WScript.Sleep 1000 
+	  WScript.Sleep 250 
 
     'A tester : https://www.codeproject.com/Tips/507798/Differences-between-Run-and-Exec-VBScript
 
