@@ -1,19 +1,19 @@
 '===================================================================
 ' Description: VBS script to import *.eml files.
 '
-' Future fix : no sleep time trick for waiting the mail to be openned in Outlook
+' Future fix : no sleep time trick for waiting the mail to be openned in Outlook (background process)
 ' @See https://stackoverflow.com/questions/38969503/shellexecute-and-wait
 '
 ' Third party software : http://patorjk.com/software/taag/#p=display&f=Big&t=Outlook%20-%20import%20*%20EML
 '
-' Important : 
+' Check : 
 '
-' - Default email client (Outlook) should be selected in parameters : Default Windows Application
+' - Default email client (Outlook) should be selected in Windows configuration @see "Default apps"
 ' - Default application for opening *.eml files should be Outlook
 '
 ' Author : Jean-Gaël Gricourt 
 ' Inspired by : Robert Sparnaaij - http://www.howto-outlook.com/howto/import-eml-files.htm
-' Version: 1.01
+' Version: 1.02
 ' Website: none
 ' Github : https://github.com/jgricourt/vbs-outlook-import-eml.git
 '
@@ -121,7 +121,7 @@ For Each oFile In oParentFolder.Files
 	  oShell.ShellExecute oFile.Path, "", "", "open", 1
 	  WScript.Sleep 250 
 
-    'A tester : https://www.codeproject.com/Tips/507798/Differences-between-Run-and-Exec-VBScript
+    'To be tested : https://www.codeproject.com/Tips/507798/Differences-between-Run-and-Exec-VBScript
 
     'Move email to Outlook destination folder
     Dim MyInspector : Set MyInspector = oOutlook.ActiveInspector
@@ -182,5 +182,3 @@ Sub ShowError(message)
     WScript.Echo "Src: " & Err.Source & " Desc: " &  Err.Description
     Err.Clear
 End Sub
-
-
